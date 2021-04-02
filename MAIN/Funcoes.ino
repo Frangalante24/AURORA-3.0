@@ -300,29 +300,30 @@ void iniciar_ejecao()
 //return: altitude;
 //Filtro de Kalman
 //return: altitude;
-float filtro(float acel_vert, float mfr, float m, float* P, float v, float alt) {
-  
+float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, float* alt, float h_m, float delta, float h_ant) {
+
+    float v1,v2;
     float aux1,aux2,aux3,densidade;
     float Ve,L,M,p0,R0,temperatura;
-    float g=9.81, A=0, C=1, K;
+    float g=9.81, A=0, C=1, K, K2;
     float Fa,Fm;
-    float acel_corrigida,a_prediction, P_prediction,residual;
-    float Q=1, R=2500;//corrigir o R em funcao do ruido (quadrado do desvio padrao = cov)
+    float acel_corrigida,a_prediction, h_prediction, P_prediction,residual;
+    float Q=800, R=1000, Q2 = 2, R2 = 400;//corrigir o R em funcao do ruido (quadrado do desvio padrao = cov)
 
-    Ve=1709;
+    Ve=1186;
     L = 0.0065;
     M = 0.0289654;
     p0 = 101325;
     R0 = 8.31447;
-    temperatura = 25 + 373.15;
+    temperatura = 25 + 273.15;
 
     aux1 = (p0 * M) / (R0 * (temperatura));
-    aux2 = 1 - ((L * alt) / (temperatura));
+    aux2 = 1 - ((L * h_m) / (temperatura));
     aux3 = ((g * M) / (R0 *L)) - 1;
     densidade = aux1 * (pow(aux2,aux3)); //E' suposto ser aux2^aux3;
   
     Fm = mfr * Ve; //*sin(pitch) ou assim
-    Fa = 0.43*densidade*(v)*(v)* 0.017671*0.5; //0.43 era o coeficiente de drag do blimunda, mudar para Aurora III
+    Fa = 0.4*densidade*(v)*(v)* 0.0063617251*0.5; 
     if (v<0)
         Fa=-Fa;
   
@@ -332,7 +333,20 @@ float filtro(float acel_vert, float mfr, float m, float* P, float v, float alt) 
     K = (P_prediction * C)/(C * P_prediction * C + R);
     acel_corrigida = a_prediction + K*residual;
     *P = (1 - K*C)*P_prediction; 
+
+    v1 = v + acel_corrigida*delta;
+
+    h_prediction = h_m + v*delta + 0.5*delta*delta*acel_corrigida;
+    P_prediction = 1*(*P2) + Q2;
+    residual = h_m - h_prediction;
+    K2 = (P_prediction)/(P_prediction + R2);
+    *alt = h_prediction + R2*residual;
+    *P2 = (1-K2)*P_prediction;
+
+    v2 = (*alt - h_ant)/delta;
+
+    v = 0.65*v1 + 0.35*v2;
   
-   return acel_corrigida;
+   return v;
   
 }
