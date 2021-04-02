@@ -144,7 +144,7 @@ void loop()
   }
       
   acel_vert = (-AcXf+sin((PI/2))*sin(PI/2));                                    //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
-  v = filtro(acel_vert, mfr, m, &P, &P2, v,&h, delta);                          //Faz a correcção dos valores da velocidade com o filtro
+  v = filtro(acel_vert, mfr, m, &P, &P2, v,&h, altitude_medida, delta);                          //Faz a correcção dos valores da velocidade com o filtro
   
 
   //Obtem coordenadas do GPS
