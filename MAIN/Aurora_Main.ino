@@ -26,9 +26,9 @@ double longitude;
 
 float altitude_medida;
 String leitura;
-float m=12,m0=8;
+float m=7,m0=5.8;
 float t = millis();
-float v=0, h=0, P = 0;
+float v=0, h=0, P = 0, P2=0;
 float delta;
 float mfr;
 float acel_vert;
@@ -135,7 +135,7 @@ void loop()
   
   if (m>m0)
   {                                                         //Se ainda houver combustivel (m > m0), a massa do rocket vai diminuindo
-      mfr=0.5;                                              //Corrigir este valor!
+      mfr=0.33;                                             
       m=m-mfr*delta;                                        //À medida em que se vai queimando o combustivel         
   }
   else
@@ -143,11 +143,9 @@ void loop()
     mfr=0;
   }
       
-  acel_vert = (-AcXf+sin((PI/2))*sin(PI/2));                                    //Calcura a aceleração vertical
-  acel_corrigida = filtro(acel_vert, mfr, m, &P, v,h);                          //Faz a correcção dos valores da aceleração com o filtro
+  acel_vert = (-AcXf+sin((PI/2))*sin(PI/2));                                    //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
+  v = filtro(acel_vert, mfr, m, &P, &P2, v,&h);                          //Faz a correcção dos valores da velocidade com o filtro
   
-  v=v+acel_corrigida*delta;
-  h=h+v*delta + acel_corrigida*delta*delta;
 
   //Obtem coordenadas do GPS
 
