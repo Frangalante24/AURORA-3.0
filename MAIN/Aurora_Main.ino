@@ -35,6 +35,8 @@ float acel_vert;
 float acel_corrigida;
 float haux;
 float tempo_aux_v = 0;
+float tempo_aux_h = 0;
+float altura_maxima = -999999;
 
 
 void setup()
@@ -187,14 +189,32 @@ void loop()
     }
     */
     
-    if(ejecao==0 && (v>5 || (millis()-startMillis)<=tempo_seguranca))     //se v<5 durante tempo_v_ejecao, então ejeta
+    if(v>5 || (millis()-startMillis)<=tempo_seguranca)     //se v<5 durante tempo_v_ejecao, então ejeta
     {  
       tempo_aux_v=millis();
     }
-    if(ejecao == 0 && millis()-tempo_aux_v >= tempo_v_ejecao)
+    if(ejecao == 0 && millis()-tempo_aux_v >= tempo_v_ejecao && (millis()-startMillis)>tempo_seguranca)
     {
       ejecao = 1;
       iniciar_ejecao();
+    }
+    
+    if((millis()-startMillis)<=tempo_seguranca)
+    {
+      tempo_aux_h=millis();
+    }
+    if(ejecao==0 && (millis()-startMillis)>tempo_seguranca))    //se h < altitude maxima ate aí durante tempo_h_ejecao, então ejeta
+    {  
+      if(h>altitude_max)
+      {
+        tempo_aux_h=millis();
+        altitude_max=h;
+      }
+      if(ejecao == 0 && millis()-tempo_aux_h >= tempo_h_ejecao)
+      {
+        ejecao = 1;
+        iniciar_ejecao();
+      }
     }
     
     
