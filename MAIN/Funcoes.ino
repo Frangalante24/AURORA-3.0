@@ -328,8 +328,15 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
         Fa=-Fa;
   
     a_prediction = Fm/m - Fa/m - g;
-    P_prediction = A*(*P)*A + Q;
     residual = acel_vert - C*a_prediction;
+    if residual>50
+        Q=800/(cosh(0.035*(residual-50)));
+    else if residual<-50
+        Q=800/(cosh(0.035*(residual+50)));
+    else
+        Q = 800;
+  
+    P_prediction = A*(*P)*A + Q;
     K = (P_prediction * C)/(C * P_prediction * C + R);
     acel_corrigida = a_prediction + K*residual;
     *P = (1 - K*C)*P_prediction; 
@@ -337,8 +344,8 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
     v1 = v + acel_corrigida*delta;
 
     h_prediction = h_m + v*delta + 0.5*delta*delta*acel_corrigida;
-    P_prediction = 1*(*P2) + Q2;
     residual = h_m - h_prediction;
+    P_prediction = 1*(*P2) + Q2;
     K2 = (P_prediction)/(P_prediction + R2);
     *alt = h_prediction + R2*residual;
     *P2 = (1-K2)*P_prediction;
