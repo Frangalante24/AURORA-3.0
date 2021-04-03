@@ -187,7 +187,7 @@ void loop()
     }
     */
     
-    if(ejecao==0 && (v>5 || (millis()-startMillis)<=tempo_seguranca))
+    if(ejecao==0 && (v>5 || (millis()-startMillis)<=tempo_seguranca))     //se v<5 durante tempo_v_ejecao, então ejeta
     {  
       tempo_aux_v=millis();
     }
