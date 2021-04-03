@@ -147,6 +147,8 @@ void loop()
   v = filtro(acel_vert, mfr, m, &P, &P2, v,&h, altitude_medida, delta, haux);                          //Faz a correcção dos valores da velocidade com o filtro
   haux=h;
 
+  //v e' a velocidade corrigida. h e' a altitude corrigida.
+  
   //Obtem coordenadas do GPS
 
   retira_dados_GPS(&latitude, &longitude);
