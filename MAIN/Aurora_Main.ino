@@ -79,6 +79,8 @@ void setup()
     }
 
   startMillis = millis();
+  tempo_aux_v = millis();
+  tempo_aux_h = millis();
   
   while(1)                                                                                                                // Launch Mode!
   {            
@@ -97,7 +99,9 @@ void setup()
     }
     else if (accelModule( AcXf, AcYf, AcZf) == false)
     {
-      startMillis = millis();
+      startMillis = millis();  
+      tempo_aux_v = millis();
+      tempo_aux_h = millis();
     }
 
     retira_dados_GPS(&latitude, &longitude);
