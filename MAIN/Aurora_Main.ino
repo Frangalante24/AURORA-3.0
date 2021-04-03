@@ -167,8 +167,7 @@ void loop()
     
   //Se ultrapassou o tempo
   
-  if ( ejecao == -1)
-  {
+ 
     if ((millis() - startMillis) >= period && ejecao == 0)
     {
       ejecao=1;
@@ -228,5 +227,4 @@ void loop()
     
     //guardaSD(leitura);                                                        //Guarda os dados no cartão SD
     envia_LORA(leitura);                                                       // Envia os dados para o Lora
-  } 
 }
