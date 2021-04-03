@@ -28,7 +28,7 @@ float altitude_medida;
 String leitura;
 float m=7,m0=5.8;
 float t = millis();
-float v=0, h=0, P = 0, P2=0;
+float v=0, h=0, P = 1000, P2=1000;
 float delta;
 float mfr;
 float acel_vert;
