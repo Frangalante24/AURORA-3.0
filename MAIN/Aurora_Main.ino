@@ -34,6 +34,7 @@ float mfr;
 float acel_vert;
 float acel_corrigida;
 float haux;
+float tempo_aux_v = 0;
 
 
 void setup()
@@ -170,6 +171,7 @@ void loop()
   
     //Caso o rocket não atinja a altitude estimada, verificar se está no processo de descida pelos valores do acelerómetro (10 instantes de amostragem)
     
+    /*
     if(v<=0 && ejecao == 0 && ( millis()- startMillis) > tempo_seguranca) 
     {                                                                          //a escolha do eixo da condiçao depende de como o acelerometro estiver no circuito
     counter_acel++;
@@ -178,11 +180,24 @@ void loop()
     {  
       counter_acel=0;
     }
-    if(ejecao == 0 && counter_acel== numero_amostragens_ejecao)
+    if(ejecao == 0 && counter_acel== it_v_ejecao)
     {
       ejecao = 1;
       iniciar_ejecao();
     }
+    */
+    
+    if(ejecao==0 && (v>5 || (millis()-startMillis)<=tempo_seguranca))
+    {  
+      tempo_aux_v=millis();
+    }
+    if(ejecao == 0 && millis()-tempo_aux_v >= tempo_v_ejecao)
+    {
+      ejecao = 1;
+      iniciar_ejecao();
+    }
+    
+    
 
     /*  leitura = String(AcXf, 5 ) + " " + String(AcYf, 5) + " " + String(AcZf,5) + " " + String(lati, 5) + " " + String(longi, 5) + " " + String(altitudeGps, 5) + " " + String(altitude_medida, 3)+ " "+ String(v,3) ; //Compila os dados numa só string
     */ 
