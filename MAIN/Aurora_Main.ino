@@ -36,7 +36,7 @@ float acel_corrigida;
 float haux;
 float tempo_aux_v = 0;
 float tempo_aux_h = 0;
-float altura_maxima = -999999;
+float altitude_max = -999999;
 
 
 void setup()
