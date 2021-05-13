@@ -329,9 +329,9 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
   
     a_prediction = Fm/m - Fa/m - g;
     residual = acel_vert - C*a_prediction;
-    if residual>50
+    if (residual>50)
         Q=800/(cosh(0.035*(residual-50)));
-    else if residual<-50
+    else if (residual<-50)
         Q=800/(cosh(0.035*(residual+50)));
     else
         Q = 800;
