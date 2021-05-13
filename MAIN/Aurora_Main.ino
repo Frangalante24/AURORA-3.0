@@ -206,7 +206,7 @@ void loop()
     {
       tempo_aux_h=millis();
     }
-    if(ejecao==0 && (millis()-startMillis)>tempo_seguranca))    //se h < altitude maxima ate aí durante tempo_h_ejecao, então ejeta
+    if(ejecao==0 && (millis()-startMillis)>tempo_seguranca)    //se h < altitude maxima ate aí durante tempo_h_ejecao, então ejeta
     {  
       if(h>altitude_max)
       {
