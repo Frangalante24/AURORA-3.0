@@ -25,13 +25,13 @@
 //Defines Ejecção
 
 #define sendPin 10
-#define Minimo_acc 2                                                              //g's
-#define Minimo_temp 300                                                           // milisegundos
-//#define it_v_ejecao 3                                                             //apagar
-#define tempo_v_ejecao 300                                                        //tempo de amostragem velocidade para ejeção
-#define tempo_h_ejecao 1500                                                       //tempo de amostragem altitude máxima para ejeção
-#define tempo_seguranca 10000                                                     //milisegundos
-#define period 26800                                                              // Periodo de Ejeção em Milisegundos
+#define Minimo_acc 2.0                                                              //g's
+#define Minimo_temp 300.0                                                           // milisegundos
+//#define it_v_ejecao 3.0                                                           //apagar??
+#define tempo_v_ejecao 300.0                                                        //tempo de amostragem velocidade para ejeção
+#define tempo_h_ejecao 1500.0                                                       //tempo de amostragem altitude máxima para ejeção
+#define tempo_seguranca 10000.0                                                     //milisegundos
+#define period 26800.0                                                              // Periodo de Ejeção em Milisegundos
 
 
 //NeoSWSerial loraSerial(loraRXD,loraTXD);                                               // RXD, TXD  Ao contrário nos dispositivos
