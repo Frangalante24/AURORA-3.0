@@ -343,7 +343,7 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
 
     v1 = v + acel_corrigida*delta;
 
-    h_prediction = h_m + v*delta + 0.5*delta*delta*acel_corrigida;
+    h_prediction = h_ant + v*delta + 0.5*delta*delta*acel_corrigida;
     residual = h_m - h_prediction;
     P_prediction = 1*(*P2) + Q2;
     K2 = (P_prediction)/(P_prediction + R2);
