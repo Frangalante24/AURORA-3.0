@@ -296,8 +296,78 @@ void iniciar_ejecao()
   ejecao = -1;
 }
 
-//Filtro de Kalman
-//return: altitude;
+//Rotação do vetor aceleração
+//return: aceleração vertical após rotação
+float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, float rotz){
+  float off_x=0;
+  float off_y=0;      //offsets calculados com o inicializador (por fazer)
+  float off_z=0;
+
+  float off_acel_x=0;
+  float off_acel_y=0;     //offsets a calcular conforme o comportamento do MPU
+  float off_acel_z=9.81;
+
+  float a_x=acx;
+  float a_y=acy; //acel medidas pelo MPU a cada intervalo
+  float a_z=acz;
+
+  float gyro_x=rotx;
+  float gyro_y=roty; //gyro medidos pelo MPU a cada intervalo
+  float gyro_z=rotz
+
+  float gyro[3];
+
+  gyro[0] = gyro_x;
+  gyro[1] = gyro_y;
+  gyro[2] = gyro_z;
+
+  float phi = gyro_x+off_x; //rot em torno de X em rads
+  float theta = gyro_y+off_y; //rot em torno de Y
+  float psi = gyro_z+off_z; //rot em torno de Z
+
+  float R[3][3];
+
+  R[0][0]= cos(theta)*cos(psi);
+  R[0][1]= sin(theta)*sin(phi)*cos(psi)+cos(phi)*sin(psi);
+  R[0][2]= sin(phi)*sin(psi)-cos(phi)*sin(theta)*cos(psi);
+
+  R[1][0]= -cos(theta)*sin(psi);
+  R[1][1]= cos(phi)*cos(psi)-sin(phi)*sin(psi)*sin(theta);
+  R[1][2]= cos(phi)*sin(theta)*sin(psi)+sin(phi)*cos(psi);
+
+  R[2][0]= sin(theta);
+  R[2][1]= -sin(phi)*cos(theta);
+  R[2][2]= cos(phi)*cos(theta);
+
+  float a[3];
+  a[0] = a_x;
+  a[1] = a_y;
+  a[2] = a_z;
+  float b[3]; //rotacao do vetor aceleracao
+
+  int i = 0;
+  int j=0;
+  int soma;
+
+  for (i=0;i<3;i++)
+  {
+      soma=0;
+      for (j=0;j>3;j++)
+      {
+          soma = soma+ R[i][j] * a[j];
+      }
+      b[i]=soma;
+  }
+
+  float acel_x_terra=b[0]-off_acel_x;  //atenção aos sinais dos offsets - verificar
+  float acel_y_terra=b[1]-off_acel_y;  //aceleracoes no referencial da terra
+  float acel_z_terra=b[2]-off_acel_z;  //aceleracao em z é a importante para os cálculos do apogeu - ejeção
+
+
+  return acel_z_terra;
+  
+}
+
 //Filtro de Kalman
 //return: altitude;
 float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, float* alt, float h_m, float delta, float h_ant) {
