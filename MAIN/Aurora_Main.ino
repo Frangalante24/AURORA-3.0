@@ -149,8 +149,8 @@ void loop()
   {                                                         //Se já não houver combustivel não há mass flow rate e a força do motor será 0
     mfr=0;
   }
-      
-  acel_vert = (-AcXf+sin((PI/2))*sin(PI/2));                                    //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
+  
+  acel_vert = obter_acel_vert(AcXf, AcYf, AcZf, rot_x, rot_y, rot_z);                                    //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
   v = filtro(acel_vert, mfr, m, &P, &P2, v,&h, altitude_medida, delta, haux);                          //Faz a correcção dos valores da velocidade com o filtro
   haux=h;
 
