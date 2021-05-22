@@ -299,21 +299,23 @@ void iniciar_ejecao()
 //Rotação do vetor aceleração
 //return: aceleração vertical após rotação
 float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, float rotz){
-  float off_x=0;
+
+  float pi = 3.14159265359;
+  float off_x=-pi/2;
   float off_y=0;      //offsets calculados com o inicializador (por fazer)
   float off_z=0;
 
   float off_acel_x=0;
   float off_acel_y=0;     //offsets a calcular conforme o comportamento do MPU
-  float off_acel_z=9.81;
+  float off_acel_z=0;
 
   float a_x=acx;
-  float a_y=acy; //acel medidas pelo MPU a cada intervalo
-  float a_z=acz;
+  float a_y=acz; //acel medidas pelo MPU a cada intervalo
+  float a_z=-acy;
 
-  float gyro_x=rotx;
-  float gyro_y=roty; //gyro medidos pelo MPU a cada intervalo
-  float gyro_z=rotz
+  float gyro_x=rotz(pi/180);
+  float gyro_y=roty(pi/180); //gyro medidos pelo MPU a cada intervalo
+  float gyro_z=rotx(pi/180);
 
   float gyro[3];
 
@@ -327,16 +329,16 @@ float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, f
 
   float R[3][3];
 
-  R[0][0]= cos(theta)*cos(psi);
-  R[0][1]= sin(theta)*sin(phi)*cos(psi)+cos(phi)*sin(psi);
-  R[0][2]= sin(phi)*sin(psi)-cos(phi)*sin(theta)*cos(psi);
+  R[0][0]= cos(theta)cos(psi);
+  R[0][1]= sin(theta)sin(phi)cos(psi)+cos(phi)sin(psi);
+  R[0][2]= sin(phi)sin(psi)-cos(phi)sin(theta)cos(psi);
 
-  R[1][0]= -cos(theta)*sin(psi);
-  R[1][1]= cos(phi)*cos(psi)-sin(phi)*sin(psi)*sin(theta);
-  R[1][2]= cos(phi)*sin(theta)*sin(psi)+sin(phi)*cos(psi);
+  R[1][0]= -cos(theta)sin(psi);
+  R[1][1]= cos(phi)cos(psi)-sin(phi)sin(psi)sin(theta);
+  R[1][2]= cos(phi)sin(theta)sin(psi)+sin(phi)cos(psi);
 
   R[2][0]= sin(theta);
-  R[2][1]= -sin(phi)*cos(theta);
+  R[2][1]= -sin(phi)cos(theta);
   R[2][2]= cos(phi)*cos(theta);
 
   float a[3];
@@ -347,12 +349,12 @@ float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, f
 
   int i = 0;
   int j=0;
-  int soma;
+  float soma;
 
   for (i=0;i<3;i++)
   {
       soma=0;
-      for (j=0;j>3;j++)
+      for (j=0;j<3;j++)
       {
           soma = soma+ R[i][j] * a[j];
       }
@@ -364,8 +366,8 @@ float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, f
   float acel_z_terra=b[2]-off_acel_z;  //aceleracao em z é a importante para os cálculos do apogeu - ejeção
 
 
-  return acel_z_terra;
-  
+  return (acel_z_terra-9.81);
+
 }
 
 //Filtro de Kalman
