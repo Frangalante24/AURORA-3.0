@@ -34,11 +34,11 @@ void setup()
 {
    digitalWrite(resetPin, HIGH);
   Wire.begin();  //Começa a comunicação i2c
-  Serial.begin(9600);
+  //Serial.begin(9600);
 //while(!Serial){}
   pinMode(resetPin, OUTPUT);     
   pinMode(5, OUTPUT); //pino ejecao
-  Serial.println("Hello Mérida!!");
+ // Serial.println("Hello Mérida!!");
   delay(500);
   pinPeripheral(6, PIO_SERCOM_ALT);
   delay(50);
@@ -52,8 +52,9 @@ void setup()
   delay(50);
   inicializar_bmp();
   delay(50);
+ 
   nome_ficheiro = inicializa_SD();
-  envia_LORA("INITIAL SETUP DONE!!!!");
+  envia_LORA("STANDBY MODE");
   
 /*###--------------------------------------------------------------Standby Mode---------------------------------------------------------------------###  
  * here the module is listening to a msg from ground wich change the mode to LAUNCH MODE
@@ -63,12 +64,15 @@ void setup()
  * 
  */
  
-   unsigned long  ms= 400;
-int MODE_FLAG = 0;
+   
+unsigned long  ms= 400;
+
 unsigned long tempo_lora = millis(); 
-Serial.println("heyyy");
+
 while(MODE_FLAG==0)                                                                                                                
 {
+
+  
  unsigned long startlora = millis(); 
   do {
     
@@ -76,11 +80,12 @@ while(MODE_FLAG==0)
   
   {
     
-    leitura = Serial1.readStringUntil('\n');Serial.print(leitura);
+    leitura = Serial1.readStringUntil('\n');//Serial.print(leitura);
   if(leitura== "RED"){guardaSD("Entrei em Launch Mode!");delay(500);envia_LORA("Entrei em Launch Mode!");leitura=""; MODE_FLAG = 1; break;}
 
   
   if(leitura == "RESET"){ guardaSD("REINICIA");delay(500);envia_LORA("VAI REINICAR");leitura=""; digitalWrite(resetPin, LOW);}
+  // if(leitura == "AURORA"){ guardaSD("REINICIA");delay(500);envia_LORA("IGNITOUUUUUUU");leitura=""; iniciar_ejecao();}
   
   }
 
@@ -95,12 +100,12 @@ while(MODE_FLAG==0)
   bmp280.getCurrentAltitude(altitude_medida);
   tempo=get_gps_time();
   
-  leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +String(millis());
+  leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_z, 3)+ " " + String (-rot_x,3 )+ " " + String (rot_y,3)+" " +String(millis());
   
-  guardaSD(leitura);  //Guarda os dados no cartão SD
+  //guardaSD(leitura);  //Guarda os dados no cartão SD
   envia_LORA(leitura);  // Envia os dados para o Lora  
 
-  if (Flag_flight == 1){envia_LORA("Encontrou Flight no SD");break;}
+ 
 
   
 }
@@ -120,38 +125,46 @@ after receiving a msg from ground the module enters in Launch mode
  - saves data in SD card 
 
  */
- envia_LORA("LAUNCH MODE!!!!");
+ envia_LORA("LAUNCH MODE");
  if (Flag_flight != 1){
   while(1) 
   {   
-             
+ 
     faz_leitura_BNO( &accelerometerData, &orientationData);
     retira_dados_acc(&accelerometerData, &AcXf,&AcYf, &AcZf);
     retira_dados_rota(&orientationData, &rot_x, &rot_y, &rot_z);
     tempo=get_gps_time();   
-    if((millis() - startMillis) > Minimo_temp_flight) { guardaSD("FLIGHT  " + tempo);envia_LORA("Entrei no Flight Mode!");starttime=1;counter=1;  break;}else if (accelModule( AcXf, AcYf, AcZf) == false){startMillis = millis();  tempo_aux_v = millis();tempo_aux_h = millis();t = millis();
+    if((millis() - startMillis) > Minimo_temp_flight) {
+      guardaSD("FLIGHT  " + tempo);
+      envia_LORA("FLIGHT MODE");
+      starttime=1;counter=1;  
+      break;}
+      else if (accelModule( AcXf, AcYf, AcZf) == false){
+        startMillis = millis(); 
+        tempo_aux_v = millis();
+        tempo_aux_h = millis();
+        t = millis();
 }
     retira_dados_GPS(&latitude, &longitude);    
     bmp280.getCurrentAltitude(altitude_medida);  
-    leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +tempo; 
+    leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +String(millis());
     envia_LORA(leitura);  // Envia os dados para o Lora   
     guardaSD("0 " + leitura);  //Guarda os dados no cartão SD
-    unsigned long startlora = millis(); 
-    do {while (Serial1.available()>0){leitura = Serial1.readStringUntil('\n');Serial.print(leitura);if(leitura== "RESET"){guardaSD("REINICIA");delay(500);envia_LORA("VAI REINICAR");leitura=""; digitalWrite(resetPin, LOW);}}} while (millis() - startlora < ms);
- 
+   
   }
 }
 
 else {
  
-  unsigned long start = millis();
-  Serial.print("tempo ejacaocaic");
-  Serial.println(tempo_delay_ejecao);
+    unsigned long start = millis();
+    //Serial.print("tempo ejacaocaic");
+    //Serial.println(tempo_delay_ejecao);
   if (tempo_delay_ejecao < 0){
       ejecao = 1; iniciar_ejecao();
       envia_LORA("Ejectou tempo negativo");  
-      Serial.println(tempo_delay_ejecao);
-    Serial.println("negativo");
+       guardaSD("Ejectou tempo negativo");  //Guarda os dados no cartão SD
+     // Serial.println(tempo_delay_ejecao);
+    //Serial.println("negativo");
   }
 
   else{
@@ -159,21 +172,21 @@ else {
     
   do { 
 
-    Serial.println("cenass");
+   
     faz_leitura_BNO( &accelerometerData, &orientationData);
     retira_dados_acc(&accelerometerData, &AcXf,&AcYf, &AcZf);
     retira_dados_rota(&orientationData, &rot_x, &rot_y, &rot_z);
      retira_dados_GPS(&latitude, &longitude);
     tempo=get_gps_time();   
      bmp280.getCurrentAltitude(altitude_medida);  
-    leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +tempo; 
+    leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(0)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +String(millis());
     envia_LORA(leitura);  // Envia os dados para o Lora   
     guardaSD("1 " + leitura);  //Guarda os dados no cartão SD
     
   }while (millis() - start <tempo_delay_ejecao); 
   envia_LORA("Ejectou tempo positivo"); 
   ejecao = 1;     
-  Serial.println("Positivo");
+   guardaSD("Ejectou tempo  positivo");  //Guarda os dados no cartão SD
   iniciar_ejecao();}}}
 
 
@@ -182,7 +195,7 @@ void loop()
 {
   //Funcoes do main
   //Obter aceleracoes
-  
+
   faz_leitura_BNO( &accelerometerData, &orientationData);
   retira_dados_acc(&accelerometerData, &AcXf,&AcYf, &AcZf);
   retira_dados_rota(&orientationData, &rot_x, &rot_y, &rot_z);
@@ -193,14 +206,15 @@ void loop()
   t=millis();
   if (m>m0)
   {                                                         //Se ainda houver combustivel (m > m0), a massa do rocket vai diminuindo
-      mfr=0.33;                                             
+      mfr=0.47;                                             
       m=m-mfr*delta;                                        //À medida em que se vai queimando o combustivel         
   }
   else
   {                                                         //Se já não houver combustivel não há mass flow rate e a força do motor será 0
     mfr=0;
   }  
-  acel_vert = obter_acel_vert(AcXf, AcYf, AcZf, rot_x, rot_y, rot_z);                                   //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
+  acel_vert = obter_acel_vert(AcXf, AcYf, AcZf, rot_x, rot_y, rot_z);     //Calcura a aceleração vertical //Por aqui aquela cena da matriz rotacao
+
   v = filtro(acel_vert, mfr, m, &P, &P2, v,&h, altitude_medida, delta, haux);                          //v e' a velocidade corrigida. h e' a altitude corrigida.
   haux=h;                                                                                                 //Faz a correcção dos valores da velocidade com o filtro
   retira_dados_GPS(&latitude, &longitude);  //Obtem coordenadas do GPS
@@ -208,6 +222,7 @@ void loop()
     if ((millis() - startMillis) >= period && ejecao == 0)     //Se ultrapassou o tempo
     {
       ejecao=1;iniciar_ejecao(); guardaSD("EJETOU condicao de tempo");  
+       envia_LORA("Ejectou tempoo"); 
     }
   
     //Caso o rocket não atinja a altitude estimada, verificar se está no processo de descida pelos valores do acelerómetro (10 instantes de amostragem)
@@ -233,7 +248,7 @@ void loop()
     }
     if(ejecao == 0 &&(( millis()-tempo_aux_v) >= tempo_v_ejecao) && (millis()-startMillis)>tempo_seguranca)
     {  
-      ejecao = 1;iniciar_ejecao();guardaSD("EJETOU condicao de velocidade");  
+      ejecao = 1;iniciar_ejecao();guardaSD("EJETOU condicao de velocidade");   envia_LORA("Ejectoou velocidade"); 
     }
     
     if((millis()-startMillis)<=tempo_seguranca)
@@ -250,7 +265,7 @@ void loop()
       if(ejecao == 0 && ((millis()-tempo_aux_h )>= tempo_h_ejecao))
       {
        
-        ejecao = 1; iniciar_ejecao();guardaSD("EJETOU condicao altitude");  
+        ejecao = 1; iniciar_ejecao();guardaSD("EJETOU condicao altitude");   envia_LORA("Ejectou Altitude"); 
       }
     }
   char tempo_string[5] ;
@@ -258,5 +273,6 @@ void loop()
    
 leitura = String(AcXf, 3 ) + " " + String(AcYf, 3) + " " + String(AcZf,3) + " " + String(latitude, 8) + " " + String(longitude, 8) + " " + String(altitude_medida, 3) + " " + String(v, 3)+" " + String (rot_x, 3)+ " " + String (rot_y,3 )+ " " + String (rot_z,3)+" " +tempo_string; 
 guardaSD("1 "+ leitura);                                                        //Guarda os dados no cartão SD
-envia_LORA(leitura);                                                       // Envia os dados para o Lora
+envia_LORA(leitura);  // Envia os dados para o Lora
+
 }

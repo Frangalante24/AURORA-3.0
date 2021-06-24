@@ -11,12 +11,12 @@ Verifica se a conecção foi bem sucedida.
 
 void incializa_BNO(void)
 {
-  Serial.println("BNO init");
+  //Serial.println("BNO init");
   
   if (!bno.begin())
   {
     // Problema a detectar o BNO055... Verificar as conecções
-    Serial.print("Ooops, BNO055 nao detectado ... Verificar as coneccoes ou o endereco I2C!");
+    //Serial.print("Ooops, BNO055 nao detectado ... Verificar as coneccoes ou o endereco I2C!");
     incializa_BNO();
   }
   
@@ -216,9 +216,9 @@ String inicializa_SD(void)
           
             tempo_delay_ejecao = (TEMPO_APOGEU - tempo_decorrido - 4000) ;
             
-            Serial.println("ficheiiiro");
-            Serial.println(tempo_delay_ejecao);
-              
+          //  Serial.println("ficheiiiro");
+            //Serial.println(tempo_delay_ejecao);
+            MODE_FLAG = 1;  
             flag=1;
             Flag_flight = 1;
             break;       
@@ -294,8 +294,10 @@ take_off, instantes seguidos em que o modulo dos paramentros do acelerometro é 
 
 bool accelModule(float AcXf, float AcYf, float AcZf) { //pode-se usar apenas um dos eixos do acelerometro
   bool take_off = false;
- 
+  float ace = sqrt(pow(AcXf,2)+pow(AcYf,2)+pow(AcZf,2));
+  
   if (sqrt(pow(AcXf,2)+pow(AcYf,2)+pow(AcZf,2)) > Minimo_acc) {take_off = true;}else {take_off= false; } return take_off;
+  
 }
 /*---------------------------------------------------------------------------
                             Initializa altimetro bmp280
@@ -305,7 +307,7 @@ bool accelModule(float AcXf, float AcYf, float AcZf) { //pode-se usar apenas um 
 
 void inicializar_bmp(void)
 {
-  Serial.println("bmp init");
+ // Serial.println("bmp init");
   bmp280.begin(BMP280_I2C_ALT_ADDR);                                 // Default initialisation, place the BMP280 into SLEEP_MODE 
   bmp280.setPresOversampling(OVERSAMPLING_X4);    // Set the pressure oversampling to X4
   bmp280.setTempOversampling(OVERSAMPLING_X4);    // Set the temperature oversampling to X1
@@ -440,8 +442,7 @@ float obter_acel_vert(float acx, float acy, float acz, float rotx, float roty, f
   float acel_y_terra=b[1]-off_acel_y;  //aceleracoes no referencial da terra
   float acel_z_terra=b[2]-off_acel_z;  //aceleracao em z é a importante para os cálculos do apogeu - ejeção
 
-  Serial.println("acelaraca");
-  Serial.println(acel_z_terra -9.81);
+ 
   return (acel_z_terra-9.81);
   
 }
@@ -463,7 +464,7 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
     float acel_corrigida,a_prediction, h_prediction, P_prediction,residual;
     float Q=800, R=1000, Q2 = 2, R2 = 400;//corrigir o R em funcao do ruido (quadrado do desvio padrao = cov)
     
-    Ve=1186;
+    Ve=1700;
     L = 0.0065;
     M = 0.0289654;
     p0 = 101325;
@@ -476,7 +477,7 @@ float filtro(float acel_vert, float mfr, float m, float* P, float* P2, float v, 
     densidade = aux1 * (pow(aux2,aux3)); //E' suposto ser aux2^aux3;
   
     Fm = mfr * Ve; //*sin(pitch) ou assim
-    Fa = 0.4*densidade*(v)*(v)* 0.0063617251*0.5; 
+    Fa = 0.425*densidade*(v)*(v)* 0.0063617251*0.5; 
     if (v<0)
         Fa=-Fa;
   

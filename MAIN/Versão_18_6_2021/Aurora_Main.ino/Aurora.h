@@ -30,7 +30,7 @@
 #define tempo_v_ejecao 1100.0          //tempo de amostragem velocidade para ejeção
 #define tempo_h_ejecao 1800.0       //tempo de amostragem altitude máxima para ejeção
 #define tempo_seguranca 15000.0   //milisegundos
-#define period 26800.0               // Periodo de Ejeção em Milisegundos
+#define period 27000.0               // Periodo de Ejeção em Milisegundos
 
 //gps stuff
 char const Temp[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -38,8 +38,8 @@ char const Temp[16]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E'
 #define SET_NMEA_BAUDRATE_115200    "$PMTK251,115200"
 #define SET_NMEA_OUTPUT "$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
 #define lora_aux 4
-#define TEMPO_APOGEU 20000  //milliiis
-
+#define TEMPO_APOGEU 22000  //milliiis
+ int MODE_FLAG = 0;
 long int tempo_delay_ejecao;
 //bno stuff
 Adafruit_BNO055 bno = Adafruit_BNO055(00, 0x28);
@@ -62,7 +62,7 @@ String tempo;
 int Flag_flight = 0;
 float altitude_medida;
 String leitura;
-float m=7,m0=5.8;
+float m=7.2,m0=5.8;
 float t = 0;
 float v=0, h=0, P = 1000, P2=1000;
 float delta;
